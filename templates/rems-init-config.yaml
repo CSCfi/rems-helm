@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  config.edn: |-
+    {:port {{ .Values.port | default 3001 }}
+     :database-url "postgresql://{{ .Values.db.hostname | default "postgres-rems" }}/{{ .Values.db.name | default "rems" }}?user={{ .Values.db.user | default "rems" }}&password={{ required "A valid .Values.db.password entry required!" .Values.db.password }}"
+     :search-index-path "/tmp/rems-search-index"
+     :authentication :fake
+     :public-url "{{ .Values.protocol }}://{{ required "A valid .Values.hostname entry required!" .Values.hostname }}/"}
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: {{ .Values.name | default "rems" }}-init-config

@@ -1,0 +1,131 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name | default "rems" }}
+  labels:
+    app: {{ .Values.name | default "rems" }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name | default "rems" }}
+  template:
+    metadata:
+      name: {{ .Values.name | default "rems" }}
+      labels:
+        app: {{ .Values.name | default "rems" }}
+    spec:
+      initContainers:
+      {{- if .Values.db.wait }}
+      - name: database-wait
+        image: jbergknoff/postgresql-client
+        imagePullPolicy: "IfNotPresent"
+        command: ['sh', '-c', 'until psql -h {{ .Values.db.hostname }} -U {{ .Values.db.user }} -d {{ .Values.db.name }} -w -c "SELECT 1" ; do echo "Waiting for database to be up"; sleep 2; done']
+        env:
+        - name: PGPASSWORD
+          value: {{ .Values.db.password | quote }}
+      {{- end }}
+      {{- if .Values.migrate }}
+      - name: database-migrate
+        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+        env:
+        - name: COMMANDS
+          value: "migrate"
+        volumeMounts:
+        - name: init-config
+          mountPath: /rems/config
+      {{- end }}
+      {{- if .Values.db.addData }}
+      - name: database-add-data
+        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+        env:
+        - name: COMMANDS
+          value: {{ .Values.db.addDataType | default "test-data" | quote }}
+        volumeMounts:
+        - name: init-config
+          mountPath: /rems/config
+      {{- end }}
+      {{- if .Values.extraCommands }}
+      - name: extra-commands
+        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+        env:
+        - name: COMMANDS
+          value: {{ .Values.extraCommands | quote }}
+        volumeMounts:
+        - name: init-config
+          mountPath: /rems/config
+      {{- end }}
+      containers:
+      - name: {{ .Values.name | default "rems" }}
+        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+        {{- if not (.Values.run) }}
+        command: ["sh", "-c", "exit 0"]
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.port | default "3001" }}
+          name: rems
+        env:
+        - name: COMMANDS
+          value: run #{{ .Values.commands | default "migrate run" | quote }}
+        volumeMounts:
+        - name: config
+          mountPath: /rems/config
+        {{- $img := .Files.Glob "files/img/*" }}
+        {{- $trans := .Files.Glob "files/extra-translations/*" }}
+        {{- if .Values.theme.create }}
+        - name: theme
+          mountPath: /rems/theme
+          {{- if $img }}
+        - name: img
+          mountPath: /rems/theme/public/img
+          {{- end }}
+          {{- if $trans }}
+        - name: extra-translations
+          mountPath: /rems/theme/extra-translations
+          {{- end }}
+        {{- end }}
+        {{- if .Values.extrapages.create }}
+        - name: extra-pages
+          mountPath: /rems/extra-pages
+        {{- end }}
+        {{- if .Values.certs.create }}
+        - name: certs
+          mountPath: /rems/certs
+        {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Values.name | default "rems" }}-config
+      - name: init-config
+        configMap:
+          name: {{ .Values.name | default "rems" }}-init-config
+      {{- if .Values.theme.create }}
+      - name: theme
+        configMap:
+          name:  {{ .Values.name | default "rems" }}-theme
+        {{- if $img }}
+      - name: img
+        configMap:
+          name: {{ .Values.name | default "rems" }}-img
+        {{- end }}
+        {{- if $trans  }}
+      - name: extra-translations
+        configMap:
+          name: {{ .Values.name | default "rems" }}-extra-translations
+        {{- end }}
+      {{- end }}
+      {{- if .Values.extrapages.create }}
+      - name: extra-pages
+        configMap:
+          name: {{ .Values.name | default "rems" }}-extra-pages
+      {{- end }}
+      {{- if .Values.certs.create }}
+      - name: certs
+        configMap:
+          name: {{ .Values.name | default "rems" }}-certs
+      {{- end }}

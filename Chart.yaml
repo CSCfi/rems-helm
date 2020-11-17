@@ -1,0 +1,5 @@
+apiVersion: v2
+name: rems-helm
+version: 0.1
+description: "Resource Entitlement Management System"
+home: "rems-demo.rahtiapp.fi"

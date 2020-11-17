@@ -1,0 +1,18 @@
+apiVersion: v1
+data:
+{{- if .Values.customConfig }}
+  {{- (.Files.Glob "files/config.edn").AsConfig | nindent 2 }}
+{{- else }}
+  config.edn: |-
+    {:port {{ .Values.port | default 3001 }}
+     :database-url "postgresql://{{ .Values.db.hostname | default "postgres-rems" }}/{{ .Values.db.name | default "rems" }}?user={{ .Values.db.user | default "rems" }}&password={{ required "A valid .Values.db.password entry required!" .Values.db.password }}"
+     :search-index-path "/tmp/rems-search-index"
+     :authentication :fake
+     {{- if .Values.theme.create }}
+     :theme-path "/rems/theme/{{ .Values.theme.filename | default "theme.edn" }}"
+     {{- end }}
+     :public-url "{{ .Values.protocol }}://{{ required "A valid .Values.hostname entry required!" .Values.hostname }}/"}
+  {{- end }}
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name | default "rems" }}-config

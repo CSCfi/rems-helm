@@ -1,0 +1,42 @@
+{{- if .Values.postgres.create }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.postgres.name | default "postgres-rems" }}
+  labels:
+    app: {{ .Values.postgres.name | default "postgres-rems" }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.postgres.name | default "postgres-rems" }}
+  template:
+    metadata:
+      name: {{ .Values.postgres.name | default "postgres-rems" }}
+      labels:
+        app: {{ .Values.postgres.name | default "postgres-rems" }}
+    spec:
+      containers:
+        - name: {{ .Values.postgres.name | default "postgres-rems" }}
+          image: {{ .Values.postgres.image | default "centos/postgresql-96-centos7" }}
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: {{ .Values.postgres.port | default 5432 }}
+          env:
+            - name: POSTGRESQL_USER
+              value: {{ .Values.db.password | default "rems" | quote }}
+            - name: POSTGRESQL_PASSWORD
+              value: {{ required "A valid .Values.postgres.password entry required!" .Values.db.password }}
+            - name: POSTGRESQL_DATABASE
+              value: {{ .Values.db.name | default "rems" | quote }}
+      {{- if .Values.postgres.pvc }}
+          volumeMounts:
+            - mountPath: /var/lib/pgsql/data
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.postgres.name | default "postgres-rems" }}
+
+     {{- end }}
+{{- end }}

@@ -1,0 +1,5 @@
+{:port 3001
+ :database-url "postgresql://postgres-rems/rems?user=rems&password=rems"
+ :search-index-path "/tmp/rems-search-index"
+ :authentication :fake
+ :public-url "http://test.fi/"}

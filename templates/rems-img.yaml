@@ -1,0 +1,11 @@
+{{- if .Values.theme.create }}
+apiVersion: v1
+binaryData:
+{{ $root := . }}
+{{ range $path, $bytes := .Files.Glob "files/img/*" }}
+ {{ base $path }}: {{ $root.Files.Get $path | b64enc }}
+{{ end }}
+kind: ConfigMap
+metadata:
+  name:  {{ .Values.name | default "rems" }}-img
+{{- end }}

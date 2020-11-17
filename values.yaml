@@ -1,0 +1,38 @@
+# Default values for REMS.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+postgres:
+  create: true # Create postgres container to act as rems backend
+  pvc: false
+  storage: "1Gi"
+db:
+  name: "rems"
+  hostname: "postgres-rems"
+  wait: true # Wait for database to be ready before starting rems
+  user: "rems"
+  password: "rems"
+  addData: true # Add test data to database. Requires an empty database
+  addDataType: "test-data" # Which kind of test data to add ("test-data" and "demo-data" available)
+
+image:
+  name: cscfi/rems
+  tag: latest
+  pullPolicy: Always
+
+hostname: rems.fi
+protocol: http # Protocol for connecting to rems. (http and https available)
+port: 3001
+extraCommands: "" # Rems commands to be run before running rems
+run: true # Start rems or not
+migrate: true # Migrate datbase to rems
+ingress:
+  create: true
+  path: ""
+
+customConfig: true
+theme:
+  create: true
+extrapages:
+  create: true
+certs:
+  create: true
