@@ -21,7 +21,7 @@ spec:
           image: {{ .Values.postgres.image | default "centos/postgresql-96-centos7" }}
           imagePullPolicy: "IfNotPresent"
           ports:
-            - containerPort: {{ .Values.postgres.port | default 5432 }}
+            - containerPort: {{ .Values.db.port | default 5432 }}
           env:
             - name: POSTGRESQL_USER
               value: {{ .Values.db.password | default "rems" | quote }}

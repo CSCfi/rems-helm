@@ -8,6 +8,7 @@ postgres:
 db:
   name: "rems"
   hostname: "postgres-rems"
+  port: 5432
   wait: true # Wait for database to be ready before starting rems
   user: "rems"
   password: "rems"
