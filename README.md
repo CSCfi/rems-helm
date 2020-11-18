@@ -20,7 +20,7 @@ The charts are configured using files directory and values.yaml. Example files l
 | protocol | http/https | Protocol to use for connecting to REMS |
 | port | number | Port listened by REMS |
 | migrate | boolean | Run REMS migrate commands before any other commands |
-| extraCommands | command argument;command2;command3 | Additional commands to be run (Works with rems v2.14->) |
+| extraCommands | command argument;command2 | Additional commands to be run spearated by semicolons (Works with rems v2.14->) |
 | run | boolean  | Start rems server |
 | customConfig | boolean | If true using config file from files/config.edn (dont use different filename). If false using template file templates/rems-config.yaml and values.yaml |
 | theme.create | boolean | Create theme configmaps using files found under files/theme/, files/img/ and files/extra-translations/. Mount these configmaps to REMS pod and configure rems to use the theme. |
@@ -56,7 +56,7 @@ The charts are configured using files directory and values.yaml. Example files l
 #### Local database settings
 
 | Parameter | Possible values | Explanation |
-| --------- | --------------- | ------------|
+| --------- | --------------- | ----------- |
 | postgres.create | boolean | Create test postgres container to act as REMS backend |
 | postgres.pvc | boolean |  Create persistent volume for the postgres instance |
 | postgres.storage: | kubernetes size e.g "1Gi" | Size of the persistent volume |
