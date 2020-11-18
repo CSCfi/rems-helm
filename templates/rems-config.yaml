@@ -11,7 +11,14 @@ data:
      {{- if .Values.theme.create }}
      :theme-path "/rems/theme/{{ .Values.theme.filename | default "theme.edn" }}"
      {{- end }}
-     :public-url "{{ .Values.protocol }}://{{ required "A valid .Values.hostname entry required!" .Values.hostname }}/"}
+     :languages [:en]
+     {{- if .Values.extrapages.create }}
+     :extra-pages [{:id "about"
+                    :translations {:en {:title "About"
+                                        :filename "about-en.md"}}}]
+     :extra-pages-path "/rems/extra-pages"
+     {{- end }}
+    :public-url "{{ .Values.protocol }}://{{ required "A valid .Values.hostname entry required!" .Values.hostname }}/"}
   {{- end }}
 kind: ConfigMap
 metadata:
