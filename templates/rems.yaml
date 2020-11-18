@@ -33,6 +33,8 @@ spec:
         env:
         - name: COMMANDS
           value: "migrate"
+        - name: CMD
+          value: "migrate"
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
@@ -44,6 +46,8 @@ spec:
         env:
         - name: COMMANDS
           value: {{ .Values.db.addDataType | default "test-data" | quote }}
+        - name: CMD
+          value: {{ .Values.db.addDataType | default "test-data" | quote }}
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
@@ -53,7 +57,7 @@ spec:
         image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
-        - name: COMMANDS
+        - name: CMD
           value: {{ .Values.extraCommands | quote }}
         volumeMounts:
         - name: init-config
@@ -69,9 +73,6 @@ spec:
         ports:
         - containerPort: {{ .Values.port | default "3001" }}
           name: rems
-        env:
-        - name: COMMANDS
-          value: run #{{ .Values.commands | default "migrate run" | quote }}
         volumeMounts:
         - name: config
           mountPath: /rems/config
