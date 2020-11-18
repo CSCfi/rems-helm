@@ -56,8 +56,9 @@ The charts are configured using files directory and values.yaml. Example files l
 #### Local database settings
 
 | Parameter | Possible values | Explanation |
-| --------- | --------------- | ----------- |
+| --------- | --------------- | ----------- |
 | postgres.create | boolean | Create test postgres container to act as REMS backend |
 | postgres.pvc | boolean |  Create persistent volume for the postgres instance |
 | postgres.storage: | kubernetes size e.g "1Gi" | Size of the persistent volume |
+
 
