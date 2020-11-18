@@ -15,9 +15,9 @@ db:
   addDataType: "test-data" # Which kind of test data to add ("test-data" and "demo-data" available)
 
 image:
-  name: cscfi/rems
-  tag: latest
-  pullPolicy: Always
+  name: rems #cscfi/rems
+  tag: test #latest
+  pullPolicy: IfNotPresent #Always
 
 hostname: rems.fi
 protocol: http # Protocol for connecting to rems. (http and https available)
@@ -29,10 +29,10 @@ ingress:
   create: true
   path: ""
 
-customConfig: true
+customConfig: false
 theme:
   create: true
 extrapages:
   create: true
 certs:
-  create: true
+  create: false
