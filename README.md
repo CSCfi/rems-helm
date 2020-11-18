@@ -18,9 +18,9 @@ The charts are configured using files directory and values.yaml. Example files l
 | --------- | --------------- | ----------- |
 | hostname | hostname | Hostname of REMS |
 | protocol | http/https | Protocol to use for connecting to REMS |
-| port | Port listened by REMS |
+| port | number | Port listened by REMS |
 | migrate | boolean | Run REMS migrate commands before any other commands |
-| extraCommands | list;divided;by;semicolon these are arguments | Additional commands to be run (Works with rems v2.14->) |
+| extraCommands | command argument;command2;command3 | Additional commands to be run (Works with rems v2.14->) |
 | run | boolean  | Start rems server |
 | customConfig | boolean | If true using config file from files/config.edn (dont use different filename). If false using template file templates/rems-config.yaml and values.yaml |
 | theme.create | boolean | Create theme configmaps using files found under files/theme/, files/img/ and files/extra-translations/. Mount these configmaps to REMS pod and configure rems to use the theme. |
@@ -45,6 +45,7 @@ The charts are configured using files directory and values.yaml. Example files l
 | --------- | --------------- | ----------- |
 | db.name | string | Name of rems SQL backend database |
 | db.hostname | hostname | Hostname of the SQL database |
+| db.port | number | Port of the SQL database |
 | db.wait | boolean | Wait for database to be ready before running REMS commands |
 | db.user | string | Database username |
 | db.password | string | Database user's password |
