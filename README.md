@@ -72,6 +72,6 @@ Example configuration files located under `files/` directory. Place custom confi
 | --------- | --------------- | ----------- |
 | postgres.create | boolean | Create test postgres container to act as REMS backend |
 | postgres.pvc | boolean |  Create persistent volume for the postgres instance |
-| postgres.storage: | kubernetes size e.g "1Gi" | Size of the persistent volume |
+| postgres.storage: | kubernetes size e.g `1Gi` | Size of the persistent volume |
 
 
