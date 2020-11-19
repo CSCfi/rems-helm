@@ -8,9 +8,22 @@ The charts work out of the box with test configurations:
     git clone https://github.com/CSCfi/rems-helm
     helm install rems rems-helm
 
-## Configuration
-The charts are configured using files directory and values.yaml. Example files located under files/ directory. Configurable parameters in values.yaml:
+## Configuration files under `files/` directory
 
+Example configuration files located under `files/` directory. Place custom configuration files in correct locations and set corresponding value `true` at `values.yaml` for the configuration to be applied in REMS. Configuration files and their corresponding value at `values.yaml`:
+
+
+| Files(s) | value at `values.yaml | Explanation |
+| -------------------------- | ------------------------ | -------------- |
+| files/config.edn | customConfig | General REMS configuration
+| files/theme/* | theme.create | General theme such as colors and logos |
+| files/img/* | theme.create | Images used at theme configuration |
+| files/extra-translations/* | theme.create | Custom texts |
+| files/extra-pages/* | extrapages.create | Additional pages such as about pages |
+| files/certs/* | certs.create | Certificates to be mounted into REMS pod |
+
+
+## All Configurable parameters at `values.yaml`:
 
 #### General settings
 
