@@ -5,4 +5,4 @@ description: "Resource Entitlement Management System"
 home: "rems-demo.rahtiapp.fi"
 icon: https://www.csc.fi/o/csc-theme/images/csc-logo-teksti-fi.png
 sources:
-- https://github.com/CSCfi/rems-helm
+- https://github.com/CSCfi/sda-helm
