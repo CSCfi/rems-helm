@@ -21,14 +21,14 @@ spec:
           image: {{ .Values.postgres.image | default "centos/postgresql-96-centos7" }}
           imagePullPolicy: "IfNotPresent"
           ports:
-            - containerPort: {{ .Values.db.port | default 5432 }}
+            - containerPort: {{ .Values.dbConnection.port | default 5432 }}
           env:
             - name: POSTGRESQL_USER
-              value: {{ .Values.db.password | default "rems" | quote }}
+              value: {{ .Values.dbConnection.password | default "rems" | quote }}
             - name: POSTGRESQL_PASSWORD
-              value: {{ required "A valid .Values.postgres.password entry required!" .Values.db.password }}
+              value: {{ required "A valid .Values.postgres.password entry required!" .Values.dbConnection.password }}
             - name: POSTGRESQL_DATABASE
-              value: {{ .Values.db.name | default "rems" | quote }}
+              value: {{ .Values.dbConnection.name | default "rems" | quote }}
       {{- if .Values.postgres.pvc }}
           volumeMounts:
             - mountPath: /var/lib/pgsql/data

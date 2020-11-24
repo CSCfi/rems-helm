@@ -17,14 +17,14 @@ spec:
         app: {{ .Values.name | default "rems" }}
     spec:
       initContainers:
-      {{- if .Values.db.wait }}
+      {{- if .Values.dbConnection.wait }}
       - name: database-wait
         image: jbergknoff/postgresql-client
         imagePullPolicy: "IfNotPresent"
-        command: ['sh', '-c', 'until psql -h {{ .Values.db.hostname }} -U {{ .Values.db.user }} -d {{ .Values.db.name }} -w -c "SELECT 1" ; do echo "Waiting for database to be up"; sleep 2; done']
+        command: ['sh', '-c', 'until psql -h {{ .Values.dbConnection.hostname }} -U {{ .Values.dbConnection.user }} -d {{ .Values.dbConnection.name }} -w -c "SELECT 1" ; do echo "Waiting for database to be up"; sleep 2; done']
         env:
         - name: PGPASSWORD
-          value: {{ .Values.db.password | quote }}
+          value: {{ .Values.dbConnection.password | quote }}
       {{- end }}
       {{- if .Values.migrate }}
       - name: database-migrate
@@ -39,15 +39,15 @@ spec:
         - name: init-config
           mountPath: /rems/config
       {{- end }}
-      {{- if .Values.db.addData }}
+      {{- if .Values.dbConnection.addData }}
       - name: database-add-data
         image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
         - name: COMMANDS
-          value: {{ .Values.db.addDataType | default "test-data" | quote }}
+          value: {{ .Values.dbConnection.addDataType | default "test-data" | quote }}
         - name: CMD
-          value: {{ .Values.db.addDataType | default "test-data" | quote }}
+          value: {{ .Values.dbConnection.addDataType | default "test-data" | quote }}
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
