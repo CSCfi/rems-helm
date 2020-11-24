@@ -5,14 +5,14 @@ postgres:
   create: true
   pvc: false
   storage: "1Gi"
-db:
+dbConnection:
   name: "rems"
   hostname: "postgres-rems"
   port: 5432
   wait: true
   user: "rems"
   password: "rems"
-  addData: true
+  addData: false
   addDataType: "test-data"
 
 image:
@@ -32,8 +32,8 @@ ingress:
 
 customConfig: false
 theme:
-  create: true
+  create: false
 extrapages:
-  create: true
+  create: false
 certs:
   create: false
