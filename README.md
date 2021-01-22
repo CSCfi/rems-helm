@@ -29,6 +29,7 @@ Example configuration files located under `files/` directory. Place custom confi
 
 | Parameter | Possible values | Explanation |
 | --------- | --------------- | ----------- |
+| `orchestrator` | kubernetes/openshift | Container orchestartor used |
 | `hostname` | hostname | Hostname of REMS |
 | `protocol` | http/https | Protocol to use for connecting to REMS |
 | `port` | number | Port listened by REMS |
