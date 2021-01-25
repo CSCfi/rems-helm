@@ -1,4 +1,5 @@
 {{- if .Values.ingress.create }}
+{{- if eq .Values.orchestrator "kubernetes" }}
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
@@ -14,4 +15,5 @@ spec:
         backend:
           serviceName: {{ .Values.name | default "rems" }}
           servicePort: {{ .Values.port | default "3001" }}
+{{- end }}
 {{- end }}

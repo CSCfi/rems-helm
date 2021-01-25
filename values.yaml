@@ -20,7 +20,9 @@ image:
   tag: latest
   pullPolicy: IfNotPresent #Always
 
-hostname: rems.fi
+orchestrator: kubernetes
+hostname: rems.localhost
+name: rems
 protocol: http
 port: 3001
 extraCommands: ""
