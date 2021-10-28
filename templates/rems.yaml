@@ -78,6 +78,7 @@ spec:
           mountPath: /rems/config
         {{- $img := .Files.Glob "files/img/*" }}
         {{- $trans := .Files.Glob "files/extra-translations/*" }}
+        {{- $keys := .Files.Glob "files/keys/*" }}
         {{- if .Values.theme.create }}
         - name: theme
           mountPath: /rems/theme
@@ -97,6 +98,10 @@ spec:
         {{- if .Values.certs.create }}
         - name: certs
           mountPath: /rems/certs
+        {{- end }}
+        {{- if $keys }}
+        - name: keys
+          mountPath: /rems/keys
         {{- end }}
       volumes:
       - name: config
@@ -129,4 +134,9 @@ spec:
       - name: certs
         configMap:
           name: {{ .Values.name | default "rems" }}-certs
+      {{- end }}
+      {{- if $keys }}
+      - name: keys
+        secret:
+          secretName: {{ .Values.name | default "rems" }}-keys
       {{- end }}
