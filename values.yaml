@@ -39,3 +39,5 @@ extrapages:
   create: false
 certs:
   create: false
+keys:
+  create: false
