@@ -16,9 +16,12 @@ spec:
       labels:
         app: {{ .Values.postgres.name | default "postgres-rems" }}
     spec:
+    {{- if .Values.readOnlyFilesystem }}
+      serviceAccountName: postgres-rems
+    {{- end }}
       containers:
         - name: {{ .Values.postgres.name | default "postgres-rems" }}
-          image: {{ .Values.postgres.image | default "centos/postgresql-96-centos7" }}
+          image: {{ include "imageRegistry" . }}{{ .Values.postgres.image | default "centos/postgresql-96-centos7" }}
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: {{ .Values.dbConnection.port | default 5432 }}

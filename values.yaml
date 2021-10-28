@@ -9,19 +9,20 @@ dbConnection:
   name: "rems"
   hostname: "postgres-rems"
   port: 5432
-  wait: true
+  wait: false
   user: "rems"
   password: "rems"
   addData: false
   addDataType: "test-data"
+  # Included postgres wont work out of the box with tls
+  tls: false
 
 image:
   name: cscfi/rems
-  tag: release
+  tag: latest
   pullPolicy: IfNotPresent
 
 orchestrator: kubernetes
-# Included postgres wont work out of the box with read only filesystems
 readOnlyFilesystem: false
 hostname: rems.localhost
 name: rems

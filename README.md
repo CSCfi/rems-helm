@@ -35,7 +35,7 @@ Example configuration files located under `files/` directory. Place custom confi
 | `protocol` | http/https | Protocol to use for connecting to REMS |
 | `port` | number | Port listened by REMS |
 | `migrate` | boolean | Run REMS migrate commands before any other commands |
-| `readOnlyFilesystem` | boolean | Set true if kubernetes is configured to have read only filesystem. Included postgres database wont work out of the box with read only filesystems. |
+| `readOnlyFilesystem` | boolean | Set true if kubernetes will be configured on read only filesystem. |
 | `extraCommands` | command argument;command2 | Additional commands to be run spearated by semicolons (Works with rems `v2.14`->) |
 | `run` | boolean  | Start rems server |
 | `customConfig` | boolean | If true using config file from `files/config.edn` (dont use different filename). If false using template file `templates/rems-config.yaml` and `values.yaml` |
