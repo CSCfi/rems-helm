@@ -17,10 +17,11 @@ dbConnection:
 
 image:
   name: cscfi/rems
-  tag: latest
+  tag: release
   pullPolicy: IfNotPresent #Always
 
 orchestrator: kubernetes
+readOnlyFilesystem: false
 hostname: rems.localhost
 name: rems
 protocol: http

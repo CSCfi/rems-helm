@@ -103,6 +103,10 @@ spec:
         - name: keys
           mountPath: /rems/keys
         {{- end }}
+        {{- if .Values.readOnlyFilesystem }}
+        - name: tmp
+          mountPath: /tmp
+        {{- end }}
       volumes:
       - name: config
         configMap:
@@ -139,4 +143,8 @@ spec:
       - name: keys
         secret:
           secretName: {{ .Values.name | default "rems" }}-keys
+      {{- end }}
+      {{- if .Values.readOnlyFilesystem }}
+      - name: tmp
+        emptyDir: {}
       {{- end }}
