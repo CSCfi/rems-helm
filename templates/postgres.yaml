@@ -29,14 +29,15 @@ spec:
               value: {{ required "A valid .Values.postgres.password entry required!" .Values.dbConnection.password }}
             - name: POSTGRESQL_DATABASE
               value: {{ .Values.dbConnection.name | default "rems" | quote }}
-      {{- if .Values.postgres.pvc }}
           volumeMounts:
             - mountPath: /var/lib/pgsql/data
               name: data
       volumes:
         - name: data
+      {{- if .Values.postgres.pvc }}
           persistentVolumeClaim:
             claimName: {{ .Values.postgres.name | default "postgres-rems" }}
-
-     {{- end }}
+      {{- else }}
+          emptyDir: {}
+      {{- end }}
 {{- end }}
