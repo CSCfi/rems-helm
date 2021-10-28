@@ -18,9 +18,10 @@ dbConnection:
 image:
   name: cscfi/rems
   tag: release
-  pullPolicy: IfNotPresent #Always
+  pullPolicy: IfNotPresent
 
 orchestrator: kubernetes
+# Included postgres wont work out of the box with read only filesystems
 readOnlyFilesystem: false
 hostname: rems.localhost
 name: rems
