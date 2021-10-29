@@ -1,0 +1,8 @@
+{{- if .Values.dbConnection.tls }}
+apiVersion: v1
+data:
+  {{- (.Files.Glob "files/db-tls/**").AsSecrets | nindent 2 }}
+kind: Secret
+metadata:
+  name:  {{ .Values.name | default "rems" }}-db-tls
+{{- end }}

@@ -1,4 +1,4 @@
-{{- if or (and (and (.Values.ingress.create) (eq .Values.orchestrator "kubernetes")) (eq .Values.protocol "https")) (.Values.dbConnection.tls) }}
+{{- if and (and (.Values.ingress.create) (eq .Values.orchestrator "kubernetes")) (eq .Values.protocol "https") }}
 apiVersion: v1
 data:
   {{- (.Files.Glob "files/tls/**").AsSecrets | nindent 2 }}
