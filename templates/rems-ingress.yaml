@@ -15,5 +15,11 @@ spec:
         backend:
           serviceName: {{ .Values.name | default "rems" }}
           servicePort: {{ .Values.port | default "3001" }}
+  {{- if eq .Values.protocol "https" }}
+  tls:
+  - hosts:
+    - {{ .Values.hostname }}
+    secretName: {{ .Values.name | default "rems" }}-tls
+  {{- end }}
 {{- end }}
 {{- end }}

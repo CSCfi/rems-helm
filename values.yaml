@@ -14,13 +14,16 @@ dbConnection:
   password: "rems"
   addData: false
   addDataType: "test-data"
+  tls: false
 
 image:
   name: cscfi/rems
   tag: latest
-  pullPolicy: IfNotPresent #Always
+  pullPolicy: IfNotPresent
 
+imageRegistry: ""
 orchestrator: kubernetes
+readOnlyFilesystem: false
 hostname: rems.localhost
 name: rems
 protocol: http
@@ -38,4 +41,6 @@ theme:
 extrapages:
   create: false
 certs:
+  create: false
+keys:
   create: false

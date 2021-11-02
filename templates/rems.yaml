@@ -19,16 +19,29 @@ spec:
       initContainers:
       {{- if .Values.dbConnection.wait }}
       - name: database-wait
-        image: jbergknoff/postgresql-client
+        image: {{ include "imageRegistry" . }}postgres:13
         imagePullPolicy: "IfNotPresent"
-        command: ['sh', '-c', 'until psql -h {{ .Values.dbConnection.hostname }} -U {{ .Values.dbConnection.user }} -d {{ .Values.dbConnection.name }} -w -c "SELECT 1" ; do echo "Waiting for database to be up"; sleep 2; done']
+        command:
+        - sh
+        - -c
+        - |
+          until timeout 1 psql -v ON_ERROR_STOP=1 \
+                               -h {{ .Values.dbConnection.hostname }} \
+                               -U {{ .Values.dbConnection.user }} \
+                               -d {{ .Values.dbConnection.name }} \
+                               -c "SELECT 1" -w 1> /dev/null
+          do
+            echo "Waiting for database to accept connections"
+            sleep 2
+          done
+          echo "Database connection found"
         env:
         - name: PGPASSWORD
           value: {{ .Values.dbConnection.password | quote }}
       {{- end }}
       {{- if .Values.migrate }}
       - name: database-migrate
-        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
         - name: COMMANDS
@@ -41,7 +54,7 @@ spec:
       {{- end }}
       {{- if .Values.dbConnection.addData }}
       - name: database-add-data
-        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
         - name: COMMANDS
@@ -54,7 +67,7 @@ spec:
       {{- end }}
       {{- if .Values.extraCommands }}
       - name: extra-commands
-        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
         - name: CMD
@@ -65,7 +78,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Values.name | default "rems" }}
-        image: {{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         {{- if not (.Values.run) }}
         command: ["sh", "-c", "exit 0"]
@@ -78,6 +91,8 @@ spec:
           mountPath: /rems/config
         {{- $img := .Files.Glob "files/img/*" }}
         {{- $trans := .Files.Glob "files/extra-translations/*" }}
+        {{- $keys := .Files.Glob "files/keys/*" }}
+        {{- $db_tls := .Files.Glob "files/db-tls/*" }}
         {{- if .Values.theme.create }}
         - name: theme
           mountPath: /rems/theme
@@ -97,6 +112,20 @@ spec:
         {{- if .Values.certs.create }}
         - name: certs
           mountPath: /rems/certs
+        {{- end }}
+        {{- if $keys }}
+        - name: keys
+          mountPath: /rems/keys
+        {{- end }}
+        {{- if $db_tls }}
+          {{- if .Values.dbConnection.tls }}
+        - name: db-tls
+          mountPath: /rems/db-tls
+          {{- end }}
+        {{- end }}
+        {{- if .Values.readOnlyFilesystem }}
+        - name: tmp
+          mountPath: /tmp
         {{- end }}
       volumes:
       - name: config
@@ -129,4 +158,18 @@ spec:
       - name: certs
         configMap:
           name: {{ .Values.name | default "rems" }}-certs
+      {{- end }}
+      {{- if $keys }}
+      - name: keys
+        secret:
+          secretName: {{ .Values.name | default "rems" }}-keys
+      {{- end }}
+      {{- if $db_tls }}
+      - name: db-tls
+        secret:
+          secretName: {{ .Values.name | default "rems" }}-db-tls
+      {{- end }}
+      {{- if .Values.readOnlyFilesystem }}
+      - name: tmp
+        emptyDir: {}
       {{- end }}

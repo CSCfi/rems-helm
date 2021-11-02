@@ -21,6 +21,7 @@ Example configuration files located under `files/` directory. Place custom confi
 | `files/extra-translations/*` | theme.create | Custom texts |
 | `files/extra-pages/*` | extrapages.create | Additional pages such as about pages |
 | `files/certs/*` | certs.create | Certificates to be mounted into REMS pod |
+| `files/keys/*` | keys.create | Keys to be mounted into REMS pod. |
 
 
 ## All Configurable parameters at `values.yaml`:
@@ -34,6 +35,7 @@ Example configuration files located under `files/` directory. Place custom confi
 | `protocol` | http/https | Protocol to use for connecting to REMS |
 | `port` | number | Port listened by REMS |
 | `migrate` | boolean | Run REMS migrate commands before any other commands |
+| `readOnlyFilesystem` | boolean | Set true if kubernetes will be configured on read only filesystem. |
 | `extraCommands` | command argument;command2 | Additional commands to be run spearated by semicolons (Works with rems `v2.14`->) |
 | `run` | boolean  | Start rems server |
 | `customConfig` | boolean | If true using config file from `files/config.edn` (dont use different filename). If false using template file `templates/rems-config.yaml` and `values.yaml` |
