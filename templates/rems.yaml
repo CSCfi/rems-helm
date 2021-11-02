@@ -19,9 +19,22 @@ spec:
       initContainers:
       {{- if .Values.dbConnection.wait }}
       - name: database-wait
-        image: {{ include "imageRegistry" . }}jbergknoff/postgresql-client
+        image: {{ include "imageRegistry" . }}postgres:13
         imagePullPolicy: "IfNotPresent"
-        command: ['sh', '-c', 'until psql -v ON_ERROR_STOP=1 -h {{ .Values.dbConnection.hostname }} -U {{ .Values.dbConnection.user }} -d {{ .Values.dbConnection.name }} -w -c "SELECT 1" ; do echo "Waiting for database to be up"; sleep 2; done']
+        command:
+        - sh
+        - -c
+        - |
+          until timeout 1 psql -v ON_ERROR_STOP=1 \
+                               -h {{ .Values.dbConnection.hostname }} \
+                               -U {{ .Values.dbConnection.user }} \
+                               -d {{ .Values.dbConnection.name }} \
+                               -c "SELECT 1" -w 1> /dev/null
+          do
+            echo "Waiting for database to accept connections"
+            sleep 2
+          done
+          echo "Database connection found"
         env:
         - name: PGPASSWORD
           value: {{ .Values.dbConnection.password | quote }}

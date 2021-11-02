@@ -19,18 +19,22 @@ spec:
     {{- if .Values.readOnlyFilesystem }}
       serviceAccountName: postgres-rems
     {{- end }}
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
         - name: {{ .Values.postgres.name | default "postgres-rems" }}
-          image: {{ include "imageRegistry" . }}{{ .Values.postgres.image | default "centos/postgresql-96-centos7" }}
+          image: {{ include "imageRegistry" . }}postgres:13
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: {{ .Values.dbConnection.port | default 5432 }}
           env:
-            - name: POSTGRESQL_USER
+            - name: POSTGRES_USER
               value: {{ .Values.dbConnection.password | default "rems" | quote }}
-            - name: POSTGRESQL_PASSWORD
+            - name: POSTGRES_PASSWORD
               value: {{ required "A valid .Values.postgres.password entry required!" .Values.dbConnection.password }}
-            - name: POSTGRESQL_DATABASE
+            - name: POSTGRES_DATABASE
               value: {{ .Values.dbConnection.name | default "rems" | quote }}
           volumeMounts:
             - mountPath: /var/lib/pgsql/data
