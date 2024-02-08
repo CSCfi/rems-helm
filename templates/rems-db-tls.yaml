@@ -1,4 +1,4 @@
-{{- if .Values.dbConnection.tls }}
+{{- if .Values.postgres.dbConnection.tls }}
 apiVersion: v1
 data:
   {{- (.Files.Glob "files/db-tls/**").AsSecrets | nindent 2 }}

@@ -17,18 +17,18 @@ spec:
         app: {{ .Values.name | default "rems" }}
     spec:
       initContainers:
-      {{- if .Values.dbConnection.wait }}
+      {{- if .Values.postgres.dbConnection.wait }}
       - name: database-wait
-        image: {{ include "imageRegistry" . }}postgres:13
-        imagePullPolicy: "IfNotPresent"
+        image: {{ .Values.postgres.image.name }}:{{ .Values.postgres.image.tag }}
+        imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
         command:
         - sh
         - -c
         - |
           until timeout 1 psql -v ON_ERROR_STOP=1 \
-                               -h {{ .Values.dbConnection.hostname }} \
-                               -U {{ .Values.dbConnection.user }} \
-                               -d {{ .Values.dbConnection.name }} \
+                               -h {{ .Values.postgres.dbConnection.hostname }} \
+                               -U {{ .Values.postgres.dbConnection.user }} \
+                               -d {{ .Values.postgres.dbConnection.name }} \
                                -c "SELECT 1" -w 1> /dev/null
           do
             echo "Waiting for database to accept connections"
@@ -37,11 +37,11 @@ spec:
           echo "Database connection found"
         env:
         - name: PGPASSWORD
-          value: {{ .Values.dbConnection.password | quote }}
+          value: {{ .Values.postgres.dbConnection.password | quote }}
       {{- end }}
       {{- if .Values.migrate }}
       - name: database-migrate
-        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ .Values.image.rems.name }}:{{ .Values.image.rems.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
         - name: COMMANDS
@@ -52,22 +52,22 @@ spec:
         - name: init-config
           mountPath: /rems/config
       {{- end }}
-      {{- if .Values.dbConnection.addData }}
+      {{- if .Values.postgres.dbConnection.addData }}
       - name: database-add-data
-        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ .Values.image.rems.name }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
         - name: COMMANDS
-          value: {{ .Values.dbConnection.addDataType | default "test-data" | quote }}
+          value: {{ .Values.postgres.dbConnection.addDataType | default "test-data" | quote }}
         - name: CMD
-          value: {{ .Values.dbConnection.addDataType | default "test-data" | quote }}
+          value: {{ .Values.postgres.dbConnection.addDataType | default "test-data" | quote }}
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
       {{- end }}
       {{- if .Values.extraCommands }}
       - name: extra-commands
-        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ .Values.image.rems.name }}:{{ .Values.image.rems.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         env:
         - name: CMD
@@ -78,7 +78,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Values.name | default "rems" }}
-        image: {{ include "imageRegistry" . }}{{ .Values.image.name | default "cscfi/rems" }}:{{ .Values.image.tag | default "latest" }}
+        image: {{ .Values.image.rems.name }}:{{ .Values.image.rems.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
         {{- if not (.Values.run) }}
         command: ["sh", "-c", "exit 0"]
@@ -118,7 +118,7 @@ spec:
           mountPath: /rems/keys
         {{- end }}
         {{- if $db_tls }}
-          {{- if .Values.dbConnection.tls }}
+          {{- if .Values.postgres.dbConnection.tls }}
         - name: db-tls
           mountPath: /rems/db-tls
           {{- end }}

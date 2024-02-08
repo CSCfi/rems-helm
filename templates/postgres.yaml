@@ -16,26 +16,28 @@ spec:
       labels:
         app: {{ .Values.postgres.name | default "postgres-rems" }}
     spec:
-    {{- if .Values.readOnlyFilesystem }}
+      {{- if .Values.readOnlyFilesystem }}
       serviceAccountName: postgres-rems
-    {{- end }}
+      {{- end }}
+      {{- if eq .Values.orchestrator "kubernetes" }}
       securityContext:
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 999
+      {{- end }}
       containers:
-        - name: {{ .Values.postgres.name | default "postgres-rems" }}
-          image: {{ include "imageRegistry" . }}postgres:13
-          imagePullPolicy: "IfNotPresent"
+        - name: postgres-rems
+          image: {{ .Values.postgres.image.name }}:{{ .Values.postgres.image.tag }}
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.dbConnection.port | default 5432 }}
+            - containerPort: {{ .Values.postgres.dbConnection.port | default 5432 }}
           env:
-            - name: POSTGRES_USER
-              value: {{ .Values.dbConnection.password | default "rems" | quote }}
-            - name: POSTGRES_PASSWORD
-              value: {{ required "A valid .Values.postgres.password entry required!" .Values.dbConnection.password }}
-            - name: POSTGRES_DATABASE
-              value: {{ .Values.dbConnection.name | default "rems" | quote }}
+            - name: POSTGRESQL_USER
+              value: {{ .Values.postgres.dbConnection.password | default "rems" | quote }}
+            - name: POSTGRESQL_PASSWORD
+              value: {{ required "A valid .Values.postgres.password entry required!" .Values.postgres.dbConnection.password }}
+            - name: POSTGRESQL_DATABASE
+              value: {{ .Values.postgres.dbConnection.name | default "rems" | quote }}
           volumeMounts:
             - mountPath: /var/lib/pgsql/data
               name: data
@@ -43,7 +45,7 @@ spec:
         - name: data
       {{- if .Values.postgres.pvc }}
           persistentVolumeClaim:
-            claimName: {{ .Values.postgres.name | default "postgres-rems" }}
+            claimName: postgres-rems
       {{- else }}
           emptyDir: {}
       {{- end }}

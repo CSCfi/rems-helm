@@ -4,27 +4,33 @@
 postgres:
   create: true
   pvc: false
-  storage: "1Gi"
-dbConnection:
-  name: "rems"
-  hostname: "postgres-rems"
-  port: 5432
-  wait: true
-  user: "rems"
-  password: "rems"
-  addData: false
-  addDataType: "test-data"
-  tls: false
+  storage: 8Gi
+
+  image:
+    name: image-registry.openshift-image-registry.svc:5000/openshift/postgresql
+    tag: 13-el7
+    pullPolicy: IfNotPresent
+
+  dbConnection:
+    name: "rems"
+    hostname: "postgres-rems"
+    port: 5432
+    wait: true
+    user: "rems"
+    password: "rems"
+    addData: false
+    addDataType: "test-data"
+    tls: false
 
 image:
-  name: cscfi/rems
-  tag: latest
-  pullPolicy: IfNotPresent
+  rems:
+    name: cscfi/rems
+    tag: latest
+    pullPolicy: IfNotPresent
 
-imageRegistry: ""
-orchestrator: kubernetes
+orchestrator: openshift
 readOnlyFilesystem: false
-hostname: rems.localhost
+hostname: "rems.apps.okd.lumi-k.csc.fi"
 name: rems
 protocol: http
 port: 3001
@@ -37,10 +43,10 @@ ingress:
 
 customConfig: false
 theme:
-  create: false
+  create: true
 extrapages:
-  create: false
+  create: true
 certs:
-  create: false
+  create: true
 keys:
-  create: false
+  create: true

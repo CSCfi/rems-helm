@@ -5,7 +5,7 @@ data:
 {{- else }}
   config.edn: |-
     {:port {{ .Values.port | default 3001 }}
-     :database-url "postgresql://{{ .Values.dbConnection.hostname | default "postgres-rems" }}:{{ .Values.dbConnection.port | default 5432 }}/{{ .Values.dbConnection.name | default "rems" }}?user={{ .Values.dbConnection.user | default "rems" }}&password={{ required "A valid .Values.dbConnection.password entry required!" .Values.dbConnection.password }}"
+     :database-url "postgresql://{{ .Values.postgres.dbConnection.hostname | default "postgres-rems" }}:{{ .Values.postgres.dbConnection.port | default 5432 }}/{{ .Values.postgres.dbConnection.name | default "rems" }}?user={{ .Values.postgres.dbConnection.user | default "rems" }}&password={{ required "A valid .Values.postgres.dbConnection.password entry required!" .Values.postgres.dbConnection.password }}"
      :search-index-path "/tmp/rems-search-index"
      :authentication :fake
      {{- if .Values.theme.create }}
