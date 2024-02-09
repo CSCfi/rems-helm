@@ -4,5 +4,5 @@ data:
   {{- (.Files.Glob "files/keys/**").AsSecrets | nindent 2 }}
 kind: Secret
 metadata:
-  name:  {{ .Values.name | default "rems" }}-keys
+  name:  {{ .Values.name }}-keys
 {{- end }}

@@ -2,47 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.name | default "rems" }}
+  name: {{ .Values.name }}
   labels:
-    app: {{ .Values.name | default "rems" }}
+    app: {{ .Values.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.name | default "rems" }}
+      app: {{ .Values.name }}
   template:
     metadata:
-      name: {{ .Values.name | default "rems" }}
+      name: {{ .Values.name }}
       labels:
-        app: {{ .Values.name | default "rems" }}
+        app: {{ .Values.name }}
     spec:
       initContainers:
-      {{- if .Values.postgres.dbConnection.wait }}
-      - name: database-wait
-        image: {{ .Values.postgres.image.name }}:{{ .Values.postgres.image.tag }}
-        imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
-        command:
-        - sh
-        - -c
-        - |
-          until timeout 1 psql -v ON_ERROR_STOP=1 \
-                               -h {{ .Values.postgres.dbConnection.hostname }} \
-                               -U {{ .Values.postgres.dbConnection.user }} \
-                               -d {{ .Values.postgres.dbConnection.name }} \
-                               -c "SELECT 1" -w 1> /dev/null
-          do
-            echo "Waiting for database to accept connections"
-            sleep 2
-          done
-          echo "Database connection found"
-        env:
-        - name: PGPASSWORD
-          value: {{ .Values.postgres.dbConnection.password | quote }}
-      {{- end }}
       {{- if .Values.migrate }}
       - name: database-migrate
-        image: {{ .Values.image.rems.name }}:{{ .Values.image.rems.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: COMMANDS
           value: "migrate"
@@ -52,39 +30,39 @@ spec:
         - name: init-config
           mountPath: /rems/config
       {{- end }}
-      {{- if .Values.postgres.dbConnection.addData }}
+      {{- if .Values.database.addData }}
       - name: database-add-data
-        image: {{ .Values.image.rems.name }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: COMMANDS
-          value: {{ .Values.postgres.dbConnection.addDataType | default "test-data" | quote }}
+          value: {{ .Values.database.addDataType }}
         - name: CMD
-          value: {{ .Values.postgres.dbConnection.addDataType | default "test-data" | quote }}
+          value: {{ .Values.database.addDataType }}
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
       {{- end }}
       {{- if .Values.extraCommands }}
       - name: extra-commands
-        image: {{ .Values.image.rems.name }}:{{ .Values.image.rems.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: CMD
-          value: {{ .Values.extraCommands | quote }}
+          value: {{ .Values.extraCommands }}
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
       {{- end }}
       containers:
-      - name: {{ .Values.name | default "rems" }}
-        image: {{ .Values.image.rems.name }}:{{ .Values.image.rems.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" | quote }}
+      - name: {{ .Values.name }}
+        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if not (.Values.run) }}
         command: ["sh", "-c", "exit 0"]
         {{- end }}
         ports:
-        - containerPort: {{ .Values.port | default "3001" }}
+        - containerPort: {{ .Values.port }}
           name: rems
         volumeMounts:
         - name: config
@@ -118,7 +96,7 @@ spec:
           mountPath: /rems/keys
         {{- end }}
         {{- if $db_tls }}
-          {{- if .Values.postgres.dbConnection.tls }}
+          {{- if .Values.postgres.tls.enabled }}
         - name: db-tls
           mountPath: /rems/db-tls
           {{- end }}
@@ -130,44 +108,44 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ .Values.name | default "rems" }}-config
+          name: {{ .Values.name }}-config
       - name: init-config
         configMap:
-          name: {{ .Values.name | default "rems" }}-init-config
+          name: {{ .Values.name }}-init-config
       {{- if .Values.theme.create }}
       - name: theme
         configMap:
-          name:  {{ .Values.name | default "rems" }}-theme
+          name:  {{ .Values.name }}-theme
         {{- if $img }}
       - name: img
         configMap:
-          name: {{ .Values.name | default "rems" }}-img
+          name: {{ .Values.name }}-img
         {{- end }}
         {{- if $trans  }}
       - name: extra-translations
         configMap:
-          name: {{ .Values.name | default "rems" }}-extra-translations
+          name: {{ .Values.name }}-extra-translations
         {{- end }}
       {{- end }}
       {{- if .Values.extrapages.create }}
       - name: extra-pages
         configMap:
-          name: {{ .Values.name | default "rems" }}-extra-pages
+          name: {{ .Values.name }}-extra-pages
       {{- end }}
       {{- if .Values.certs.create }}
       - name: certs
         configMap:
-          name: {{ .Values.name | default "rems" }}-certs
+          name: {{ .Values.name }}-certs
       {{- end }}
       {{- if $keys }}
       - name: keys
         secret:
-          secretName: {{ .Values.name | default "rems" }}-keys
+          secretName: {{ .Values.name }}-keys
       {{- end }}
       {{- if $db_tls }}
       - name: db-tls
         secret:
-          secretName: {{ .Values.name | default "rems" }}-db-tls
+          secretName: {{ .Values.name }}-db-tls
       {{- end }}
       {{- if .Values.readOnlyFilesystem }}
       - name: tmp

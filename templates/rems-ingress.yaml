@@ -3,23 +3,23 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.name | default "rems" }}
+  name: {{ .Values.name }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: {{ .Values.hostname }}
+  - host: {{ .Values.name }}.{{ .Values.hostname }}
     http:
       paths:
-      - path: /{{ .Values.ingress.path | default "" }}
+      - path: /{{ .Values.ingress.path }}
         backend:
-          serviceName: {{ .Values.name | default "rems" }}
-          servicePort: {{ .Values.port | default "3001" }}
+          serviceName: {{ .Values.name }}
+          servicePort: {{ .Values.port }}
   {{- if eq .Values.protocol "https" }}
   tls:
   - hosts:
-    - {{ .Values.hostname }}
-    secretName: {{ .Values.name | default "rems" }}-tls
+    - {{ .Values.name }}.{{ .Values.hostname }}
+    secretName: {{ .Values.name }}-tls
   {{- end }}
 {{- end }}
 {{- end }}

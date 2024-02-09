@@ -2,15 +2,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.name | default "rems" }}
+  name: {{ .Values.name }}
   labels:
-    app: {{ .Values.name | default "rems" }}
+    app: {{ .Values.name }}
 spec:
   ports:
-  - port: {{ .Values.port | default "3001" }}
+  - port: {{ .Values.port }}
     protocol: TCP
-    targetPort: {{ .Values.port | default "3001" }}
+    targetPort: {{ .Values.port }}
   selector:
-    app: {{ .Values.name | default "rems" }}
+    app: {{ .Values.name }}
   sessionAffinity: None
   type: ClusterIP

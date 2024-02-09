@@ -1,51 +1,56 @@
 # Default values for REMS.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-postgres:
-  create: true
-  pvc: false
-  storage: 8Gi
 
-  image:
-    name: image-registry.openshift-image-registry.svc:5000/openshift/postgresql
-    tag: 13-el7
-    pullPolicy: IfNotPresent
-
-  dbConnection:
-    name: "rems"
-    hostname: "postgres-rems"
-    port: 5432
-    wait: true
-    user: "rems"
-    password: "rems"
-    addData: false
-    addDataType: "test-data"
-    tls: false
-
-image:
-  rems:
-    name: cscfi/rems
-    tag: latest
-    pullPolicy: IfNotPresent
-
-orchestrator: openshift
-readOnlyFilesystem: false
-hostname: "rems.apps.okd.lumi-k.csc.fi"
+#############
+## GENERAL ##
+#############
 name: rems
+orchestrator: openshift
+hostname: "" # Set a hostname (REQUIRED)
+readOnlyFilesystem: false
 protocol: http
 port: 3001
 extraCommands: ""
 run: true
 migrate: true
+
+# If orchestrator is kubernetes
 ingress:
   create: true
   path: ""
 
+################
+## POSTGRESQL ##
+################
+postgresql:
+  enabled: true
+  auth:
+    username: # Set an username (REQUIRED)
+    password: # Set a password (REQUIRED)
+    database: rems
+  tls:
+    enabled: false
+
+##########
+## REMS ##
+##########
+image:
+  name: cscfi/rems
+  tag: latest
+  pullPolicy: IfNotPresent
+
+database:
+  addData: false
+  addDataType: "test-data"
+
 customConfig: false
 theme:
   create: true
+  filename: "theme.edn"
 extrapages:
   create: true
+  filename: "about-en.md"
 certs:
   create: true
 keys:

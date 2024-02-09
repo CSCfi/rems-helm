@@ -4,5 +4,5 @@ data:
   {{- (.Files.Glob "files/extra-pages/**.md").AsConfig | nindent 2 }}
 kind: ConfigMap
 metadata:
-  name:  {{ .Values.name | default "rems" }}-extra-pages
+  name:  {{ .Values.name }}-extra-pages
 {{- end }}

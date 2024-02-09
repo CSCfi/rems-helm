@@ -4,5 +4,5 @@ data:
   {{- (.Files.Glob "files/extra-translations/**.edn").AsConfig | nindent 2 }}
 kind: ConfigMap
 metadata:
-  name:  {{ .Values.name | default "rems" }}-extra-translations
+  name:  {{ .Values.name  }}-extra-translations
 {{- end }}

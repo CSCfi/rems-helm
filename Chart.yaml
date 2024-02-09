@@ -6,3 +6,8 @@ home: "rems-demo.rahtiapp.fi"
 icon: https://www.csc.fi/o/csc-theme/images/csc-logo-teksti-fi.png
 sources:
 - https://github.com/CSCfi/sda-helm
+dependencies:
+  - name: postgresql
+    repository: file://postgresql
+    condition: postgresql.enabled
+    version: 13.2.28
