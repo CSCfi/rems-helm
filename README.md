@@ -74,6 +74,7 @@ Example configuration files located under `files/` directory. Place custom confi
 | `image.pullPolicy` | Always/Never/IfNotPresent | Kubernetes ImagePullPolicy |
 | `database.addData` | boolean | Add test data to database. Requires a fresh and migrated database |
 | `database.addDataType` | `test-data`/`demo-data` | Kind of test data to add |
+| `database.wait` | boolean | Enable or not the `init-containers` that check the database is up and running before processing with REMS |
 | `customConfig` | boolean | If true using config file from `files/config.edn` (dont use different filename). If false using template file `templates/rems-config.yaml` and `values.yaml` |
 | `theme.create` | boolean | Create theme configmaps using files found under `files/theme/`, `files/img/` and `files/extra-translations/`. Mount these configmaps to REMS pod and configure rems to use the theme. |
 | `theme.filename` | string | Name of the theme's file to be used |

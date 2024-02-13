@@ -6,7 +6,7 @@
 ## GENERAL ##
 #############
 name: rems
-orchestrator: openshift
+orchestrator: openshift # kubernetes or openshift
 hostname: "" # Set a hostname (REQUIRED)
 readOnlyFilesystem: false
 protocol: http
@@ -25,12 +25,39 @@ ingress:
 ################
 postgresql:
   enabled: true
+
   auth:
+    enablePostgresUser: false
     username: # Set an username (REQUIRED)
     password: # Set a password (REQUIRED)
     database: rems
+
   tls:
     enabled: false
+  
+  # SecurityContext disabled by default for OpenShift.
+  primary:
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+
+  readReplicas:
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+  
+  backup:
+    cronjob:
+      podSecurityContext:
+        enabled: false
+      containerSecurityContext:
+        enabled: false
+  
+  metrics:
+    containerSecurityContext:
+      enabled: false
 
 ##########
 ## REMS ##
@@ -43,6 +70,7 @@ image:
 database:
   addData: false
   addDataType: "test-data"
+  wait: true
 
 customConfig: false
 theme:

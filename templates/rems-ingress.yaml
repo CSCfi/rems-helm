@@ -12,9 +12,12 @@ spec:
     http:
       paths:
       - path: /{{ .Values.ingress.path }}
+        pathType: Exact
         backend:
-          serviceName: {{ .Values.name }}
-          servicePort: {{ .Values.port }}
+          service:
+            name: {{ .Values.name }}
+            port: 
+              number: {{ .Values.port }}
   {{- if eq .Values.protocol "https" }}
   tls:
   - hosts:

@@ -17,6 +17,27 @@ spec:
         app: {{ .Values.name }}
     spec:
       initContainers:
+      {{- if .Values.database.wait }}
+      - name: database-wait
+        image: bitnami/postgresql:16.2.0-debian-11-r1
+        command:
+        - /bin/sh
+        - -c
+        - |
+          until timeout 1 psql -v ON_ERROR_STOP=1 \
+                               -h rems-postgresql \
+                               -U {{ .Values.postgresql.auth.username }} \
+                               -d {{ .Values.postgresql.auth.database }} \
+                               -c "SELECT 1" -w 1> /dev/null
+          do
+            echo "Waiting for database to accept connections"
+            sleep 2
+          done
+          echo "Database connection found"
+        env:
+        - name: PGPASSWORD
+          value: {{ .Values.postgresql.auth.password | quote }}
+      {{- end }}
       {{- if .Values.migrate }}
       - name: database-migrate
         image: {{ .Values.image.name }}:{{ .Values.image.tag }}
