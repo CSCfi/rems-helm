@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install helm3
-      run: |
-        wget https://get.helm.sh/helm-v3.4.1-linux-amd64.tar.gz -O - | tar -xz
-        sudo cp linux-amd64/helm /usr/local/bin/helm
+    - name: Install Helm
+      uses: azure/setup-helm@v3
     - name: Lint
-      run: helm lint
+      run: |
+        helm dependency build charts/rems
+        helm lint charts/rems
