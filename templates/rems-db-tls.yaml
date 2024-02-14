@@ -1,8 +1,8 @@
-{{- if .Values.dbConnection.tls }}
+{{- if .Values.postgresql.tls.enabled }}
 apiVersion: v1
 data:
   {{- (.Files.Glob "files/db-tls/**").AsSecrets | nindent 2 }}
 kind: Secret
 metadata:
-  name:  {{ .Values.name | default "rems" }}-db-tls
+  name:  {{ .Values.name }}-db-tls
 {{- end }}

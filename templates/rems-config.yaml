@@ -1,25 +1,25 @@
 apiVersion: v1
 data:
-{{- if .Values.customConfig }}
+{{- if .Values.rems.customConfig }}
   {{- (.Files.Glob "files/config.edn").AsConfig | nindent 2 }}
 {{- else }}
   config.edn: |-
-    {:port {{ .Values.port | default 3001 }}
-     :database-url "postgresql://{{ .Values.dbConnection.hostname | default "postgres-rems" }}:{{ .Values.dbConnection.port | default 5432 }}/{{ .Values.dbConnection.name | default "rems" }}?user={{ .Values.dbConnection.user | default "rems" }}&password={{ required "A valid .Values.dbConnection.password entry required!" .Values.dbConnection.password }}"
+    {:port {{ .Values.port }}
+     :database-url "postgresql://rems-postgresql:5432/{{ .Values.postgresql.auth.database }}?user={{ .Values.postgresql.auth.username }}&password={{ required "A valid .Values.postgresql.auth.password entry required!" .Values.postgresql.auth.password }}"
      :search-index-path "/tmp/rems-search-index"
      :authentication :fake
-     {{- if .Values.theme.create }}
-     :theme-path "/rems/theme/{{ .Values.theme.filename | default "theme.edn" }}"
+     {{- if .Values.rems.theme.create }}
+     :theme-path "/rems/theme/{{ .Values.rems.theme.filename }}"
      {{- end }}
      :languages [:en]
-     {{- if .Values.extrapages.create }}
+     {{- if .Values.rems.extrapages.create }}
      :extra-pages [{:id "about"
                     :translations {:en {:title "About"
-                                        :filename "about-en.md"}}}]
+                                        :filename {{ .Values.rems.extrapages.filename }}}}}]
      :extra-pages-path "/rems/extra-pages"
      {{- end }}
-    :public-url "{{ .Values.protocol }}://{{ required "A valid .Values.hostname entry required!" .Values.hostname }}/"}
+    :public-url "{{ .Values.protocol }}://{{ .Values.name }}.{{ required "A valid .Values.hostname entry required!" .Values.hostname }}/"}
   {{- end }}
 kind: ConfigMap
 metadata:
-  name: {{ .Values.name | default "rems" }}-config
+  name: {{ .Values.name }}-config

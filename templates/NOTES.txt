@@ -1,0 +1,19 @@
+CHART NAME: {{ .Chart.Name  }}
+CHART VERSION: {{ .Chart.Version  }}
+APP VERSION: {{ .Chart.AppVersion  }}
+
+** Please be patient while the chart is being deployed **
+
+{{- if eq .Values.orchestrator "openshift" }}
+Deployed on OKD. Once done, you can access your applications by retrieving the route using this command:
+
+    export REMS_UI=$(oc get route --namespace={{ .Release.Namespace }} -o yaml | yq '.items[0].spec.host') && echo "REMS Webserver URL: http://$REMS_UI"
+{{- end }}
+
+{{- if eq .Values.orchestrator "kubernetes" }}
+{{- if .Values.ingress.create }}
+Deployed on Kubernetes. Once done, you can access the webserver by executing the following command(s) and visiting the corresponding port at localhost in your browser:
+    
+    REMS Webserver = kubectl port-forward svc/{{ .Values.name }} {{ .Values.port }}:{{ .Values.port }} --namespace {{ .Release.Namespace }}
+{{- end }}
+{{- end }}

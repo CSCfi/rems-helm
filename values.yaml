@@ -1,46 +1,124 @@
 # Default values for REMS.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-postgres:
-  create: true
-  pvc: false
-  storage: "1Gi"
-dbConnection:
-  name: "rems"
-  hostname: "postgres-rems"
-  port: 5432
-  wait: true
-  user: "rems"
-  password: "rems"
-  addData: false
-  addDataType: "test-data"
-  tls: false
 
-image:
-  name: cscfi/rems
-  tag: latest
-  pullPolicy: IfNotPresent
-
-imageRegistry: ""
-orchestrator: kubernetes
-readOnlyFilesystem: false
-hostname: rems.localhost
+#############
+## GENERAL ##
+#############
 name: rems
+orchestrator: kubernetes # kubernetes or openshift
+hostname: "" # Set a hostname (REQUIRED)
+readOnlyFilesystem: false
 protocol: http
 port: 3001
 extraCommands: ""
 run: true
 migrate: true
+
+# If orchestrator is kubernetes
 ingress:
   create: true
   path: ""
 
-customConfig: false
-theme:
-  create: false
-extrapages:
-  create: false
-certs:
-  create: false
-keys:
-  create: false
+################
+## POSTGRESQL ##
+################
+postgresql:
+  enabled: true
+
+  auth:
+    enablePostgresUser: false
+    username: # Set an username (REQUIRED)
+    password: # Set a password (REQUIRED)
+    database: rems
+
+  tls:
+    enabled: false
+  
+  # SecurityContext disabled by default for OpenShift.
+  primary:
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+  readReplicas:
+    podSecurityContext:
+      enabled: false
+    containerSecurityContext:
+      enabled: false
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+          
+  backup:
+    cronjob:
+      podSecurityContext:
+        enabled: false
+      containerSecurityContext:
+        enabled: false
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+  metrics:
+    containerSecurityContext:
+      enabled: false
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+##########
+## REMS ##
+##########
+rems:
+  image:
+    name: cscfi/rems
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  database:
+    addData: false
+    addDataType: "test-data"
+    wait: true
+
+  containerSecurityContext:
+    securityContext:
+      runAsNonRoot: false
+      seccompProfile:
+        type: RuntimeDefault    
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+
+  customConfig: false
+  theme:
+    create: true
+    filename: "theme.edn"
+  extrapages:
+    create: true
+    filename: "about-en.md"
+  certs:
+    create: true
+  keys:
+    create: true

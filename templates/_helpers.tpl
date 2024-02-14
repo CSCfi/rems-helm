@@ -5,8 +5,3 @@
 {{- print "extensions/v1beta1" -}}
 {{- end -}}
 {{- end -}}
-
-
-{{- define "imageRegistry" -}}
-{{- ternary "" (printf "%s/" .Values.imageRegistry) (empty .Values.imageRegistry) -}}
-{{- end -}}

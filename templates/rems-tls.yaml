@@ -4,6 +4,6 @@ data:
   {{- (.Files.Glob "files/tls/**").AsSecrets | nindent 2 }}
 kind: Secret
 metadata:
-  name:  {{ .Values.name | default "rems" }}-tls
+  name:  {{ .Values.name }}-tls
 type: kubernetes.io/tls
 {{- end }}
