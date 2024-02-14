@@ -1,17 +1,16 @@
 name: Publish charts
 
 on:
-  merge_group:
   pull_request:
-    branches:
-      - main
-    paths:
-      - "charts/**"
-    types: [ closed ]
+    # branches:
+    #   - master
+    # paths:
+    #   - "charts/**"
+    # types: [ closed ]
 
 jobs:
   release_chart:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
