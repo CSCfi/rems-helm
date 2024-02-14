@@ -1,4 +1,4 @@
-{{- if .Values.keys.create }}
+{{- if .Values.rems.keys.create }}
 apiVersion: v1
 data:
   {{- (.Files.Glob "files/keys/**").AsSecrets | nindent 2 }}

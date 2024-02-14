@@ -1,4 +1,4 @@
-{{- if .Values.theme.create }}
+{{- if .Values.rems.theme.create }}
 apiVersion: v1
 data:
   {{- (.Files.Glob "files/extra-translations/**.edn").AsConfig | nindent 2 }}

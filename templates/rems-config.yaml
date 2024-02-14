@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-{{- if .Values.customConfig }}
+{{- if .Values.rems.customConfig }}
   {{- (.Files.Glob "files/config.edn").AsConfig | nindent 2 }}
 {{- else }}
   config.edn: |-
@@ -8,14 +8,14 @@ data:
      :database-url "postgresql://rems-postgresql:5432/{{ .Values.postgresql.auth.database }}?user={{ .Values.postgresql.auth.username }}&password={{ required "A valid .Values.postgresql.auth.password entry required!" .Values.postgresql.auth.password }}"
      :search-index-path "/tmp/rems-search-index"
      :authentication :fake
-     {{- if .Values.theme.create }}
-     :theme-path "/rems/theme/{{ .Values.theme.filename }}"
+     {{- if .Values.rems.theme.create }}
+     :theme-path "/rems/theme/{{ .Values.rems.theme.filename }}"
      {{- end }}
      :languages [:en]
-     {{- if .Values.extrapages.create }}
+     {{- if .Values.rems.extrapages.create }}
      :extra-pages [{:id "about"
                     :translations {:en {:title "About"
-                                        :filename {{ .Values.extrapages.filename }}}}}]
+                                        :filename {{ .Values.rems.extrapages.filename }}}}}]
      :extra-pages-path "/rems/extra-pages"
      {{- end }}
     :public-url "{{ .Values.protocol }}://{{ .Values.name }}.{{ required "A valid .Values.hostname entry required!" .Values.hostname }}/"}

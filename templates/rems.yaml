@@ -17,7 +17,7 @@ spec:
         app: {{ .Values.name }}
     spec:
       initContainers:
-      {{- if .Values.database.wait }}
+      {{- if .Values.rems.database.wait }}
       - name: database-wait
         image: bitnami/postgresql:16.2.0-debian-11-r1
         command:
@@ -37,11 +37,19 @@ spec:
         env:
         - name: PGPASSWORD
           value: {{ .Values.postgresql.auth.password | quote }}
+        securityContext:
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault    
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
       {{- end }}
       {{- if .Values.migrate }}
       - name: database-migrate
-        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ .Values.rems.image.name }}:{{ .Values.rems.image.tag }}
+        imagePullPolicy: {{ .Values.rems.image.pullPolicy }}
         env:
         - name: COMMANDS
           value: "migrate"
@@ -50,35 +58,44 @@ spec:
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
+        {{- if eq "kubernetes" .Values.orchestrator "kubernetes" }}
+        {{- .Values.rems.containerSecurityContext | toYaml | nindent 8 }}
+        {{- end }}
       {{- end }}
-      {{- if .Values.database.addData }}
+      {{- if .Values.rems.database.addData }}
       - name: database-add-data
-        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ .Values.rems.image.name }}:{{ .Values.rems.image.tag }}
+        imagePullPolicy: {{ .Values.rems.image.pullPolicy }}
         env:
         - name: COMMANDS
-          value: {{ .Values.database.addDataType }}
+          value: {{ .Values.rems.database.addDataType }}
         - name: CMD
-          value: {{ .Values.database.addDataType }}
+          value: {{ .Values.rems.database.addDataType }}
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
+        {{- if eq .Values.orchestrator "kubernetes" }}
+        {{- .Values.rems.containerSecurityContext | toYaml | nindent 10 }}
+        {{- end }}
       {{- end }}
       {{- if .Values.extraCommands }}
       - name: extra-commands
-        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ .Values.rems.image.name }}:{{ .Values.rems.image.tag }}
+        imagePullPolicy: {{ .Values.rems.image.pullPolicy }}
         env:
         - name: CMD
           value: {{ .Values.extraCommands }}
         volumeMounts:
         - name: init-config
           mountPath: /rems/config
+        {{- if eq .Values.orchestrator "kubernetes" }}
+        {{- .Values.rems.containerSecurityContext | toYaml | nindent 10 }}
+        {{- end }}
       {{- end }}
       containers:
       - name: {{ .Values.name }}
-        image: {{ .Values.image.name }}:{{ .Values.image.tag }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: {{ .Values.rems.image.name }}:{{ .Values.rems.image.tag }}
+        imagePullPolicy: {{ .Values.rems.image.pullPolicy }}
         {{- if not (.Values.run) }}
         command: ["sh", "-c", "exit 0"]
         {{- end }}
@@ -92,7 +109,7 @@ spec:
         {{- $trans := .Files.Glob "files/extra-translations/*" }}
         {{- $keys := .Files.Glob "files/keys/*" }}
         {{- $db_tls := .Files.Glob "files/db-tls/*" }}
-        {{- if .Values.theme.create }}
+        {{- if .Values.rems.theme.create }}
         - name: theme
           mountPath: /rems/theme
           {{- if $img }}
@@ -104,11 +121,11 @@ spec:
           mountPath: /rems/theme/extra-translations
           {{- end }}
         {{- end }}
-        {{- if .Values.extrapages.create }}
+        {{- if .Values.rems.extrapages.create }}
         - name: extra-pages
           mountPath: /rems/extra-pages
         {{- end }}
-        {{- if .Values.certs.create }}
+        {{- if .Values.rems.certs.create }}
         - name: certs
           mountPath: /rems/certs
         {{- end }}
@@ -126,6 +143,9 @@ spec:
         - name: tmp
           mountPath: /tmp
         {{- end }}
+        {{- if eq .Values.orchestrator "kubernetes" }}
+        {{- .Values.rems.containerSecurityContext | toYaml | nindent 8 }}
+        {{- end }}
       volumes:
       - name: config
         configMap:
@@ -133,7 +153,7 @@ spec:
       - name: init-config
         configMap:
           name: {{ .Values.name }}-init-config
-      {{- if .Values.theme.create }}
+      {{- if .Values.rems.theme.create }}
       - name: theme
         configMap:
           name:  {{ .Values.name }}-theme
@@ -148,12 +168,12 @@ spec:
           name: {{ .Values.name }}-extra-translations
         {{- end }}
       {{- end }}
-      {{- if .Values.extrapages.create }}
+      {{- if .Values.rems.extrapages.create }}
       - name: extra-pages
         configMap:
           name: {{ .Values.name }}-extra-pages
       {{- end }}
-      {{- if .Values.certs.create }}
+      {{- if .Values.rems.certs.create }}
       - name: certs
         configMap:
           name: {{ .Values.name }}-certs

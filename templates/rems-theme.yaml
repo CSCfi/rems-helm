@@ -1,7 +1,7 @@
-{{- if .Values.theme.create }}
+{{- if .Values.rems.theme.create }}
 apiVersion: v1
 data:
-{{- $filename := printf "files/theme/%s" (.Values.theme.filename) -}}
+{{- $filename := printf "files/theme/%s" (.Values.rems.theme.filename) -}}
 {{- $theme := .Files.Glob $filename }}
 {{ ($theme).AsConfig | indent 2 }}
 kind: ConfigMap
