@@ -1,11 +1,11 @@
 apiVersion: v2
 name: rems-helm
-version: "0.1"
+version: "0.2.0"
 description: "Resource Entitlement Management System"
-home: "rems-demo.rahtiapp.fi"
+home: "https://cscfi.github.io/rems-helm/"
 icon: https://www.csc.fi/o/csc-theme/images/csc-logo-teksti-fi.png
 sources:
-- https://github.com/CSCfi/sda-helm
+- https://github.com/CSCfi/rems
 dependencies:
   - name: postgresql
     repository: oci://registry-1.docker.io/bitnamicharts
