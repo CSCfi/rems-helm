@@ -2,6 +2,23 @@ apiVersion: v1
 entries:
   rems-helm:
   - apiVersion: v2
+    created: "2024-02-15T09:41:26.135495926Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 13.x.x
+    description: Resource Entitlement Management System
+    digest: 385c0d47a8ad22e2069acc4e77427397283569c8b5854c9567fd0f91c6221d90
+    home: https://cscfi.github.io/rems-helm/
+    icon: https://www.csc.fi/o/csc-theme/images/csc-logo-teksti-fi.png
+    name: rems-helm
+    sources:
+    - https://github.com/CSCfi/rems
+    urls:
+    - https://github.com/CSCfi/rems-helm/releases/download/rems-helm-0.2.0/rems-helm-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2024-02-14T21:05:15.625619943Z"
     dependencies:
     - condition: postgresql.enabled
@@ -18,4 +35,4 @@ entries:
     urls:
     - https://github.com/CSCfi/rems-helm/releases/download/rems-helm-0.1/rems-helm-0.1.tgz
     version: "0.1"
-generated: "2024-02-14T21:05:15.625628489Z"
+generated: "2024-02-15T09:41:26.135506606Z"
